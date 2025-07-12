@@ -13,7 +13,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
         case 'advancedClean':
             // استفاده از نام صحیح تابع
-            cleanBrowseData(request.data, sendResponse);
+            cleanbrowseData(request.data, sendResponse);
             return true;
     }
 });
