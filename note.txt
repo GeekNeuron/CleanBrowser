@@ -1,0 +1,6 @@
+background.js:37 Proxy settings cleared.
+Error handling response: TypeError: Cannot read properties of undefined (reading 'remove')
+    at chrome-extension://ibldjbonhfmnobmfapejfmmobpondnki/background.js:43:27
+background.js:37 Proxy settings cleared.
+Error handling response: TypeError: Cannot read properties of undefined (reading 'remove')
+    at chrome-extension://ibldjbonhfmnobmfapejfmmobpondnki/background.js:43:27
