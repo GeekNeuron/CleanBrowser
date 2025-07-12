@@ -7,8 +7,7 @@
     "proxy",
     "BrowseData",
     "storage",
-    "notifications",
-    "alarms"
+    "notifications"
   ],
   "action": {
     "default_popup": "popup.html",
