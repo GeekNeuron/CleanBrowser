@@ -3,12 +3,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggleAdvancedBtn = document.getElementById('toggle-advanced-btn');
     const advancedOptionsDiv = document.getElementById('advanced-options');
     const cleanSelectedBtn = document.getElementById('clean-selected-btn');
-
     const statusText = document.getElementById('status-text');
     const statusSection = document.getElementById('status-section');
     const statusRecommendation = document.getElementById('status-recommendation');
 
-    // 1. Check browser status when the popup opens
+    // بررسی وضعیت
     chrome.runtime.sendMessage({ action: 'checkStatus' }, (response) => {
         if (!chrome.runtime.lastError && response) {
             if (response.status === 'good') {
@@ -24,44 +23,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 2. Main clean button - NEW LOGIC
+    // دکمه اصلی فقط پراکسی را پاک می‌کند
     mainCleanBtn.addEventListener('click', () => {
-        mainCleanBtn.textContent = 'Step 1: Cleaning Proxy...';
+        mainCleanBtn.textContent = 'Resetting Proxy...';
         mainCleanBtn.disabled = true;
-
-        // Step 1: Tell the background script to ONLY clear the proxy
-        chrome.runtime.sendMessage({ action: 'cleanProxyOnly' }, (response) => {
-            if (chrome.runtime.lastError || !response || !response.success) {
-                mainCleanBtn.textContent = 'Error! Check Console.';
-                return;
-            }
-
-            console.log("Proxy cleared. Now clearing host cache from popup.");
-            mainCleanBtn.textContent = 'Step 2: Cleaning DNS Cache...';
-
-            // Step 2: Now, the POPUP script itself clears the Browse data
-            const options = { since: 0 };
-            const dataToRemove = { "hostCache": true };
-
-            chrome.BrowseData.remove(options, dataToRemove, () => {
-                console.log("Host cache cleared successfully from popup.");
-                mainCleanBtn.textContent = '🚀 Main Clean (VPN / Proxy / DNS)';
-                mainCleanBtn.disabled = false;
-                // Send a message to the background just to show the final notification
-                chrome.runtime.sendMessage({ action: 'showSuccessNotification' });
-            });
+        chrome.runtime.sendMessage({ action: 'cleanProxyOnly' }, () => {
+            mainCleanBtn.textContent = '🚀 Reset Proxy Settings';
+            mainCleanBtn.disabled = false;
         });
     });
 
-    // 3. Button to toggle advanced options
+    // نمایش/پنهان کردن گزینه‌های بیشتر
     toggleAdvancedBtn.addEventListener('click', () => {
         const isVisible = advancedOptionsDiv.classList.toggle('visible');
         toggleAdvancedBtn.textContent = isVisible ? 'Close More Options' : 'More Cleaning Options...';
     });
 
-    // 4. Button to clean selected items
+    // دکمه پاکسازی موارد انتخابی
     cleanSelectedBtn.addEventListener('click', () => {
         const dataTypes = {
+            hostCache: document.getElementById('clean-hostCache').checked,
             cache: document.getElementById('clean-cache').checked,
             history: document.getElementById('clean-history').checked,
             cookies: document.getElementById('clean-cookies').checked,
