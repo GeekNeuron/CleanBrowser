@@ -30,31 +30,34 @@ function checkProxyStatus(callback) {
     });
 }
 
-// **MODIFIED AND FIXED FUNCTION**
-// Function for the main clean (Proxy and DNS cache)
-function cleanProxyAndDns() {
-    // Step 1: Reset proxy settings. This part still uses a callback.
-    chrome.proxy.settings.clear({}, async () => {
-        console.log("Proxy settings cleared.");
-        
-        try {
-            // Step 2: Clear the browser's host cache (DNS cache).
-            // We now use an explicit options object and await the promise.
-            const options = { since: 0 }; // Clears data from all time
-            const dataToRemove = {
-                "hostCache": true
-            };
-            
-            await chrome.BrowseData.remove(options, dataToRemove);
-            console.log("Host cache cleared successfully.");
-            showNotification('Main Clean Complete', 'VPN/Proxy traces and the DNS cache have been successfully cleared.');
+// **REWRITTEN AND FINAL FUNCTION**
+// Decouples proxy clearing from Browse data removal to fix the context error.
+async function cleanProxyAndDns() {
+    try {
+        // Step 1: Wrap proxy clearing in a promise to ensure it completes first.
+        await new Promise((resolve) => {
+            chrome.proxy.settings.clear({}, () => {
+                console.log("Proxy settings cleared successfully.");
+                resolve(); // Signal that this step is done.
+            });
+        });
 
-        } catch (error) {
-            console.error("Error clearing host cache:", error);
-            showNotification('Error', 'Could not clear the host cache. See the console for details.');
-        }
-    });
+        // Step 2: Now, in a separate step, clear the host cache.
+        const options = { since: 0 };
+        const dataToRemove = { "hostCache": true };
+        
+        await chrome.BrowseData.remove(options, dataToRemove);
+        console.log("Host cache cleared successfully.");
+
+        // Step 3: Show success notification only after all steps are complete.
+        showNotification('Main Clean Complete', 'VPN/Proxy traces and the DNS cache have been successfully cleared.');
+
+    } catch (error) {
+        console.error("An error occurred during the main clean process:", error);
+        showNotification('Error', 'Could not complete the main clean. See the console for details.');
+    }
 }
+
 
 // Function for the advanced clean
 function cleanBrowseData(dataTypes) {
