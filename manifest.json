@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Clean Browser",
-  "version": "1.0",
-  "description": "Cleans traces left by VPNs, proxies, and DNS to reset and improve browser performance.",
+  "version": "2.0",
+  "description": "Cleans traces left by VPNs and proxies, and provides tools for cleaning Browse data.",
   "permissions": [
     "proxy",
     "BrowseData",
