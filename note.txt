@@ -1,8 +1,8 @@
-background.js:9 Proxy settings cleared by background.
-popup.js:39 Proxy cleared. Now clearing host cache from popup.
-popup.html:1 Error handling response: TypeError: Cannot read properties of undefined (reading 'remove')
-    at chrome-extension://lgpfkfndlgjepenjkhoflgfiicpamgie/popup.js:46:31
 Error in event handler: TypeError: Cannot read properties of undefined (reading 'remove')
-    at cleanBrowseData (chrome-extension://lgpfkfndlgjepenjkhoflgfiicpamgie/background.js:41:27)
-    at chrome-extension://lgpfkfndlgjepenjkhoflgfiicpamgie/background.js:15:13
+    at cleanBrowseData (chrome-extension://ihbakahomkhclglblhfabbakjihablbe/background.js:38:27)
+    at chrome-extension://ihbakahomkhclglblhfabbakjihablbe/background.js:16:13
+popup.html:1 Unchecked runtime.lastError: The message port closed before a response was received.
+Error in event handler: TypeError: Cannot read properties of undefined (reading 'remove')
+    at cleanBrowseData (chrome-extension://ihbakahomkhclglblhfabbakjihablbe/background.js:38:27)
+    at chrome-extension://ihbakahomkhclglblhfabbakjihablbe/background.js:16:13
 popup.html:1 Unchecked runtime.lastError: The message port closed before a response was received.
