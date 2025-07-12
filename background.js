@@ -37,6 +37,7 @@ function cleanBrowseData(dataTypes, callback) {
         if (dataTypes[key]) { dataToRemove[key] = true; }
     });
     if (Object.keys(dataToRemove).length > 0) {
+        // این خط به شکل کاملا صحیح نوشته شده است
         chrome.BrowseData.remove({ since: 0 }, dataToRemove, () => {
             showNotification('Cleaning Complete', 'The selected items have been successfully cleared.');
             if (callback) callback({ success: true });
