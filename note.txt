@@ -1,7 +1,3 @@
-background.js:38 Proxy settings cleared.
-background.js:53 Error clearing host cache: TypeError: Cannot read properties of undefined (reading 'remove')
-    at background.js:48:37
-(anonymous) @ background.js:53
-background.js:38 Proxy settings cleared.
-background.js:53 Error clearing host cache: TypeError: Cannot read properties of undefined (reading 'remove')
-    at background.js:48:37
+background.js:40 Proxy settings cleared successfully.
+background.js:56 An error occurred during the main clean process: TypeError: Cannot read properties of undefined (reading 'remove')
+    at cleanProxyAndDns (background.js:49:33)
