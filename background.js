@@ -35,7 +35,7 @@ function cleanBrowseData(dataTypes, callback) {
         if (dataTypes[key]) { dataToRemove[key] = true; }
     });
     if (Object.keys(dataToRemove).length > 0) {
-        chrome.BrowseData.remove({ since: 0 }, dataToRemove, () => {
+        chrome.browseingData.remove({ since: 0 }, dataToRemove, () => {
             showNotification('Cleaning Complete', 'The selected items have been successfully cleared.');
             if (callback) callback({ success: true });
         });
