@@ -1,3 +1,5 @@
-background.js:40 Proxy settings cleared successfully.
-background.js:56 An error occurred during the main clean process: TypeError: Cannot read properties of undefined (reading 'remove')
-    at cleanProxyAndDns (background.js:49:33)
+background.js:22 Step 1 Complete: Proxy settings cleared.
+background.js:24 Step 2 Scheduled: Alarm set for DNS cache cleaning.
+background.js:31 Step 3 Initiated: Alarm received. Clearing DNS cache.
+background.js:39 A critical error occurred during DNS cache cleaning: TypeError: Cannot read properties of undefined (reading 'remove')
+    at background.js:35:37
