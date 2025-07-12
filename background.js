@@ -30,19 +30,29 @@ function checkProxyStatus(callback) {
     });
 }
 
+// **MODIFIED AND FIXED FUNCTION**
 // Function for the main clean (Proxy and DNS cache)
 function cleanProxyAndDns() {
-    // Reset proxy settings
-    chrome.proxy.settings.clear({}, () => {
+    // Step 1: Reset proxy settings. This part still uses a callback.
+    chrome.proxy.settings.clear({}, async () => {
         console.log("Proxy settings cleared.");
         
-        // Clear the browser's host cache (DNS cache)
-        const dataToRemove = {
-            "hostCache": true
-        };
-        chrome.BrowseData.remove({}, dataToRemove, () => {
+        try {
+            // Step 2: Clear the browser's host cache (DNS cache).
+            // We now use an explicit options object and await the promise.
+            const options = { since: 0 }; // Clears data from all time
+            const dataToRemove = {
+                "hostCache": true
+            };
+            
+            await chrome.BrowseData.remove(options, dataToRemove);
+            console.log("Host cache cleared successfully.");
             showNotification('Main Clean Complete', 'VPN/Proxy traces and the DNS cache have been successfully cleared.');
-        });
+
+        } catch (error) {
+            console.error("Error clearing host cache:", error);
+            showNotification('Error', 'Could not clear the host cache. See the console for details.');
+        }
     });
 }
 
