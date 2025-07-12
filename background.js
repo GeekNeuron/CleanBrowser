@@ -1,11 +1,13 @@
-// Listen for messages from the popup
+// **FINAL, ROBUST VERSION USING ALARMS API**
+
+// Listen for messages from the popup UI
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'checkStatus') {
         checkProxyStatus(sendResponse);
-        return true; // Required for asynchronous responses
+        return true; 
     }
     if (request.action === 'mainClean') {
-        cleanProxyAndDns();
+        initiateMainClean();
         sendResponse({ success: true });
     }
     if (request.action === 'advancedClean') {
@@ -14,62 +16,50 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
 });
 
+// The new main clean process
+function initiateMainClean() {
+    chrome.proxy.settings.clear({}, () => {
+        console.log("Step 1 Complete: Proxy settings cleared.");
+        chrome.alarms.create('dnsCleanAlarm', { delayInMinutes: 0.016 }); // Approx 1 second
+        console.log("Step 2 Scheduled: Alarm set for DNS cache cleaning.");
+    });
+}
+
+// Listen for the alarm to run the second, independent step
+chrome.alarms.onAlarm.addListener(async (alarm) => {
+    if (alarm.name === 'dnsCleanAlarm') {
+        console.log("Step 3 Initiated: Alarm received. Clearing DNS cache.");
+        try {
+            const options = { since: 0 };
+            const dataToRemove = { "hostCache": true };
+            await chrome.BrowseData.remove(options, dataToRemove);
+            console.log("Step 3 Complete: Host cache cleared successfully.");
+            showNotification('Main Clean Complete', 'VPN/Proxy traces and the DNS cache have been successfully cleared.');
+        } catch (error) {
+            console.error("A critical error occurred during DNS cache cleaning:", error);
+            showNotification('Error', 'Could not clear the host cache. See the console for details.');
+        }
+    }
+});
+
 // Function to check the proxy status
 function checkProxyStatus(callback) {
     chrome.proxy.settings.get({}, (details) => {
         if (details.levelOfControl === 'controlled_by_other_extensions' || details.levelOfControl === 'controlled_by_this_extension') {
-            callback({
-                status: 'bad',
-                recommendation: '❗️ Active VPN or Proxy detected. A Main Clean is recommended.'
-            });
+            callback({ status: 'bad', recommendation: '❗️ Active VPN or Proxy detected. A Main Clean is recommended.' });
         } else {
-            callback({
-                status: 'good'
-            });
+            callback({ status: 'good' });
         }
     });
 }
-
-// **REWRITTEN AND FINAL FUNCTION**
-// Decouples proxy clearing from Browse data removal to fix the context error.
-async function cleanProxyAndDns() {
-    try {
-        // Step 1: Wrap proxy clearing in a promise to ensure it completes first.
-        await new Promise((resolve) => {
-            chrome.proxy.settings.clear({}, () => {
-                console.log("Proxy settings cleared successfully.");
-                resolve(); // Signal that this step is done.
-            });
-        });
-
-        // Step 2: Now, in a separate step, clear the host cache.
-        const options = { since: 0 };
-        const dataToRemove = { "hostCache": true };
-        
-        await chrome.BrowseData.remove(options, dataToRemove);
-        console.log("Host cache cleared successfully.");
-
-        // Step 3: Show success notification only after all steps are complete.
-        showNotification('Main Clean Complete', 'VPN/Proxy traces and the DNS cache have been successfully cleared.');
-
-    } catch (error) {
-        console.error("An error occurred during the main clean process:", error);
-        showNotification('Error', 'Could not complete the main clean. See the console for details.');
-    }
-}
-
 
 // Function for the advanced clean
 function cleanBrowseData(dataTypes) {
     const dataToRemove = {};
     Object.keys(dataTypes).forEach(key => {
-        if (dataTypes[key]) {
-            dataToRemove[key] = true;
-        }
+        if (dataTypes[key]) { dataToRemove[key] = true; }
     });
-
     if (Object.keys(dataToRemove).length > 0) {
-        // "since: 0" removes data from all time
         chrome.BrowseData.remove({ since: 0 }, dataToRemove, () => {
             showNotification('Cleaning Complete', 'The selected items have been successfully cleared.');
         });
